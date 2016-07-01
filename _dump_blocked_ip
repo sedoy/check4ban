@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm -f dump2016*.csv
+curl -s https://raw.githubusercontent.com/zapret-info/z-i/master/dump.csv > dump`date +%Y%m%d-%H%M%S`.csv
+

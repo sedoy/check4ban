@@ -1,0 +1,2 @@
+#!/bin/bash
+curl -s "http://fbdevdata.github.io/psipl/fb_ip_ban_check" | egrep ";1;" | sed "s/;/\t/g" 

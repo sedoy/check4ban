@@ -1,0 +1,21 @@
+#!/bin/bash
+CHECK_LIST='/tmp/chk2ban_our_list.tmp'
+CHECK_LIST_GR='/tmp/chk2ban_our_list_gr.tmp'
+BAN_LIST='/tmp/chk2ban_banned_list.tmp'
+TMP_FILE='/tmp/chk2ban.tmp'
+rm -f $TMP_FILE ./new_banned.list $CHECK_LIST $CHECK_LIST_GR $BAN_LIST $TMP_FILE
+curl -s "http://fbdevdata.github.io/psipl/fb_ip_ban_check" > $CHECK_LIST
+cat $CHECK_LIST |  egrep -vai "^#|^$|;1;" | awk -F ';' '{ print $2 }' > $CHECK_LIST_GR
+curl -s "https://raw.githubusercontent.com/zapret-info/z-i/master/dump.csv" | tr ",;| ":/ \\n |  egrep -vai "^$|^[[:punct:]][[:cntrl:]]" | grep "\." | sort | uniq > $BAN_LIST
+cat $CHECK_LIST_GR | egrep -v "^#|^$|;1;" |
+while read LINE
+    do
+    cat $BAN_LIST | egrep "^$LINE$" >> $TMP_FILE
+    done
+sort $TMP_FILE | uniq | sort -t. -k4,1 -k2,2 -k3,3 -k4,4 |
+while read ADDR
+    do
+    grep $ADDR $CHECK_LIST | sed "s/;/\t/g" #> new_banned.list
+    done
+#rm -f $CHECK_LIST $CHECK_LIST_GR $BAN_LIST $TMP_FILE
+#column new_banned.list
